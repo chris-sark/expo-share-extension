@@ -37,10 +37,8 @@ export const withPodfile: ConfigPlugin<{
       }).contents;
 
       // we always want to exclude expo-updates because it throws this error when the share extension is triggered
-      // EXUpdates/AppController.swift:151: Assertion failed: AppController.sharedInstace was called before the module was initialized
-      const exclude = excludedPackages?.length
-        ? Array.from(new Set(["expo-updates", ...excludedPackages]))
-        : ["expo-updates"];
+      const exclude = Array.from(new Set(excludedPackages))
+
 
       const useExpoModules = `exclude = ["${exclude.join(`", "`)}"]
   use_expo_modules!(exclude: exclude)`;

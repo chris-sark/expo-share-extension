@@ -9,6 +9,7 @@ import { withPodfile } from "./withPodfile";
 import { withShareExtensionEntitlements } from "./withShareExtensionEntitlements";
 import { withShareExtensionInfoPlist } from "./withShareExtensionInfoPlist";
 import { withShareExtensionTarget } from "./withShareExtensionTarget";
+import withShareExtensionExpoPlist from "./withShareExtensionExpoPlist";
 
 export const getAppGroup = (identifier: string) => `group.${identifier}`;
 
@@ -86,6 +87,7 @@ const withShareExtension: ConfigPlugin<{
         googleServicesFile: props?.googleServicesFile,
       },
     ],
+    withShareExtensionExpoPlist,
     withShareExtensionEntitlements,
     [
       withShareExtensionTarget,
