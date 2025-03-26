@@ -173,7 +173,7 @@ class ShareExtensionViewController: UIViewController {
           
   
 
-              if let appContext = EXAppContext.create() {
+              if let appContext = EXAppContext() {
         // Register modules provider for Expo modules
         let modulesProvider = appContext.modulesProvider()
 
@@ -184,7 +184,7 @@ class ShareExtensionViewController: UIViewController {
         let reactDelegate = ExpoReactDelegate(handlers: ExpoAppInstance.reactDelegateHandlers)
         let rootView = reactDelegate.createReactRootView(
             moduleName: "shareExtension",  // The module name for the share extension
-            initialProperties: sharedData,  // You can pass shared data here if needed
+            initialProperties: sharedData  // You can pass shared data here if needed
         )
 
           let backgroundFromInfoPlist = Bundle.main.object(forInfoDictionaryKey: "ShareExtensionBackgroundColor") as? [String: CGFloat]
