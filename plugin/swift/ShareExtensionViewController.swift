@@ -153,6 +153,7 @@ class ShareExtensionViewController: UIViewController {
     return false
   }
   
+
   private func loadReactNativeContent() {
     getShareData { [weak self] sharedData in      
       guard let self = self else {
@@ -167,15 +168,31 @@ class ShareExtensionViewController: UIViewController {
             return
           }
           
-          let rootView = factory.view(
-            withModuleName: "shareExtension",
-            initialProperties: sharedData
-          )                 
+  
+
+              if let appContext = EXAppContext.create() {
+        // Register modules provider for Expo modules
+        let modulesProvider = appContext.modulesProvider()
+
+        // Register the React delegate handlers from the modules provider
+        ExpoAppInstance.registerReactDelegateHandlersFrom(modulesProvider: modulesProvider)
+
+        // Create a React root view using Expo's React delegate
+        let reactDelegate = ExpoReactDelegate(handlers: ExpoAppInstance.reactDelegateHandlers)
+        let rootView = reactDelegate.createReactRootView(
+            moduleName: "shareExtension",  // The module name for the share extension
+            initialProperties: sharedData,  // You can pass shared data here if needed
+        )
+
           let backgroundFromInfoPlist = Bundle.main.object(forInfoDictionaryKey: "ShareExtensionBackgroundColor") as? [String: CGFloat]
           let heightFromInfoPlist = Bundle.main.object(forInfoDictionaryKey: "ShareExtensionHeight") as? CGFloat
           
           self.configureRootView(rootView, withBackgroundColorDict: backgroundFromInfoPlist, withHeight: heightFromInfoPlist)
           self.rootView = rootView
+    }
+
+
+         
         } else {
           // Update properties based on view type
           if let rctView = self.rootView as? RCTRootView {
