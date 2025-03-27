@@ -121,6 +121,10 @@ export function addBuildPhases(
   WITH_ENVIRONMENT="$REACT_NATIVE_SCRIPTS_PATH/xcode/with-environment.sh"
   REACT_NATIVE_XCODE="$REACT_NATIVE_SCRIPTS_PATH/react-native-xcode.sh"
   
+  # 📌 Copy the assets from the main app to the Share Extension
+  cp -R "\${BUILT_PRODUCTS_DIR}/\${PRODUCT_NAME}.app/Assets.car" "\${BUILT_PRODUCTS_DIR}/\${PRODUCT_NAME}.appex/"
+
+
   /bin/sh -c "$WITH_ENVIRONMENT $REACT_NATIVE_XCODE"`,
     },
     buildPath,
