@@ -5,9 +5,6 @@ import AVFoundation
 // switch to UniformTypeIdentifiers, once 14.0 is the minimum deploymnt target on expo (currently 13.4 in expo v50)
 import MobileCoreServices
 // if react native firebase is installed, we import and configure it
-
-import ExpoModulesCore
-
 #if canImport(FirebaseCore)
 import FirebaseCore
 #endif
@@ -43,8 +40,22 @@ import FirebaseAuth
       turboModuleEnabled: true,
       bridgelessEnabled: false
     )
+
+
+    EXAppContext()
+    // Register modules provider for Expo modules
+    let modulesProvider = EXAppContext.modulesProvider()
+
+    // Register the React delegate handlers from the modules provider
+    ExpoAppInstance.registerReactDelegateHandlersFrom(modulesProvider: modulesProvider)
+
+    // Create a React root view using Expo's React delegate
+    let reactDelegate = ExpoReactDelegate(handlers: ExpoAppInstance.reactDelegateHandlers)
+       
+        
+            
     
-    return RCTRootViewFactory(configuration: configuration)
+    return ExpoReactRootViewFactory(reactDelegate: reactDelegate, configuration: configuration)
   }
 }
 
@@ -156,7 +167,6 @@ class ShareExtensionViewController: UIViewController {
     return false
   }
   
-
   private func loadReactNativeContent() {
     getShareData { [weak self] sharedData in      
       guard let self = self else {
@@ -171,31 +181,15 @@ class ShareExtensionViewController: UIViewController {
             return
           }
           
-  
-
-              if let appContext = EXAppContext() {
-        // Register modules provider for Expo modules
-        let modulesProvider = appContext.modulesProvider()
-
-        // Register the React delegate handlers from the modules provider
-        ExpoAppInstance.registerReactDelegateHandlersFrom(modulesProvider: modulesProvider)
-
-        // Create a React root view using Expo's React delegate
-        let reactDelegate = ExpoReactDelegate(handlers: ExpoAppInstance.reactDelegateHandlers)
-        let rootView = reactDelegate.createReactRootView(
-            moduleName: "shareExtension",  // The module name for the share extension
-            initialProperties: sharedData  // You can pass shared data here if needed
-        )
-
+          let rootView = factory.view(
+            withModuleName: "shareExtension",
+            initialProperties: sharedData
+          )                 
           let backgroundFromInfoPlist = Bundle.main.object(forInfoDictionaryKey: "ShareExtensionBackgroundColor") as? [String: CGFloat]
           let heightFromInfoPlist = Bundle.main.object(forInfoDictionaryKey: "ShareExtensionHeight") as? CGFloat
           
           self.configureRootView(rootView, withBackgroundColorDict: backgroundFromInfoPlist, withHeight: heightFromInfoPlist)
           self.rootView = rootView
-    }
-
-
-         
         } else {
           // Update properties based on view type
           if let rctView = self.rootView as? RCTRootView {
