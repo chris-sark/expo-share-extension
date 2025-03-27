@@ -49,9 +49,9 @@ import FirebaseAuth
     let context = AppContext()
     // Register modules provider for Expo modules
     let modulesProvider = AppContext.modulesProvider()
-    let instance = ExpoAppInstance()
+    let appDelegate = ExpoAppInstance()
     // Register the React delegate handlers from the modules provider
-    instance.registerReactDelegateHandlersFrom(modulesProvider: modulesProvider)
+    ExpoAppInstance.registerReactDelegateHandlersFrom(modulesProvider: modulesProvider)
 
     // Create a React root view using Expo's React delegate
     let reactDelegate = instance.reactDelegate
@@ -72,24 +72,6 @@ import FirebaseAuth
 
     // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
     configuration.sourceURLForBridge = nil
-
-    if responds(to: #selector(extraModules(for:))) {
-      configuration.extraModulesForBridge = { bridge in
-        return appDelegate.extraModules(for: bridge)
-      }
-    }
-
-    if responds(to: #selector(extraLazyModuleClasses(for:))) {
-      configuration.extraLazyModuleClassesForBridge = { bridge in
-        return appDelegate.extraLazyModuleClasses(for: bridge)
-      }
-    }
-
-    if responds(to: #selector(bridge(_:didNotFindModule:))) {
-      configuration.bridgeDidNotFindModule = { bridge, moduleName in
-        return appDelegate.bridge(bridge, didNotFindModule: moduleName)
-      }
-    }
 
     return ExpoReactRootViewFactory(
       reactDelegate: reactDelegate,
