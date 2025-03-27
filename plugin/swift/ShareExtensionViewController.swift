@@ -54,7 +54,7 @@ import FirebaseAuth
     ExpoAppInstance.registerReactDelegateHandlersFrom(modulesProvider: modulesProvider)
 
     // Create a React root view using Expo's React delegate
-    let reactDelegate = instance.reactDelegate
+    let reactDelegate = appDelegate.reactDelegate
         
     configuration.createRootViewWithBridge = { bridge, moduleName, initProps in
       return appDelegate.createRootView(with: bridge, moduleName: moduleName, initProps: initProps)
