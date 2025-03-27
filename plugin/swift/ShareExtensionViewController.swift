@@ -46,21 +46,56 @@ import FirebaseAuth
     )
 
 
-    EXAppContext()
+    let context = AppContext()
     // Register modules provider for Expo modules
-    let modulesProvider = EXAppContext.modulesProvider()
-
+    let modulesProvider = AppContext.modulesProvider()
+    let instance = ExpoAppInstance()
     // Register the React delegate handlers from the modules provider
-    ExpoAppInstance.registerReactDelegateHandlersFrom(modulesProvider: modulesProvider)
+    instance.registerReactDelegateHandlersFrom(modulesProvider: modulesProvider)
 
     // Create a React root view using Expo's React delegate
-    let reactDelegate = ExpoReactDelegate(handlers: ExpoAppInstance.reactDelegateHandlers)
-       
+    let reactDelegate = instance.reactDelegate
+    let appDelegate = instance.appDelegate ?? instance
         
-            
-    
-    return ExpoReactRootViewFactory(reactDelegate: reactDelegate, configuration: configuration)
-  }
+    configuration.createRootViewWithBridge = { bridge, moduleName, initProps in
+      return appDelegate.createRootView(with: bridge, moduleName: moduleName, initProps: initProps)
+    }
+
+    configuration.createBridgeWithDelegate = { delegate, launchOptions in
+      return appDelegate.createBridge(with: delegate, launchOptions: launchOptions)
+    }
+
+    configuration.customizeRootView = { rootView in
+      // @tsapeta: We cannot just call `self.customize(rootView)` – see the comment of the `customizeRootView:byAppDelegate:` function in EXAppDelegateWrapper.h
+      return EXAppDelegateWrapper.customizeRootView(rootView, by: appDelegate)
+    }
+
+    // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
+    configuration.sourceURLForBridge = nil
+
+    if responds(to: #selector(extraModules(for:))) {
+      configuration.extraModulesForBridge = { bridge in
+        return appDelegate.extraModules(for: bridge)
+      }
+    }
+
+    if responds(to: #selector(extraLazyModuleClasses(for:))) {
+      configuration.extraLazyModuleClassesForBridge = { bridge in
+        return appDelegate.extraLazyModuleClasses(for: bridge)
+      }
+    }
+
+    if responds(to: #selector(bridge(_:didNotFindModule:))) {
+      configuration.bridgeDidNotFindModule = { bridge, moduleName in
+        return appDelegate.bridge(bridge, didNotFindModule: moduleName)
+      }
+    }
+
+    return ExpoReactRootViewFactory(
+      reactDelegate: reactDelegate,
+      configuration: configuration,
+      turboModuleManagerDelegate: appDelegate
+    )  }
 }
 
 class ShareExtensionViewController: UIViewController {
