@@ -4,6 +4,10 @@ import React_RCTAppDelegate
 import AVFoundation
 // switch to UniformTypeIdentifiers, once 14.0 is the minimum deploymnt target on expo (currently 13.4 in expo v50)
 import MobileCoreServices
+
+
+import ExpoModulesCore
+
 // if react native firebase is installed, we import and configure it
 #if canImport(FirebaseCore)
 import FirebaseCore
